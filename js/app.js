@@ -7,6 +7,86 @@ function loadImage(src, onLoad){
     return image;
 }
 
+
+function createBoard(w, h){
+    var sq = [];
+    var isOddRow = true;
+    var isOddCol = true;
+    var x, y;
+    x = y = 0;
+    //construct board array of squares
+    for(var i=0 ; i<8 ; i++){
+        //create a row in the array of squares
+        sq[i] = [];
+        //populating the row in the array of squares
+        for(var j=0 ; j<8 ; j++){
+            if(j===0){
+                if(isOddRow){
+                    isOddCol = true;
+                }else{
+                    isOddCol = false;
+                }
+            }
+            if(isOddCol){
+                //white square
+                sq[i][j] = square('white', '#119DA4', -1, x, y, w, h);
+            }else{
+                //black square
+                sq[i][j] = square('black', '#0C7489', -1, x, y, w, h);
+            }
+            isOddCol = !isOddCol;
+            x += w;
+        }
+        isOddRow = !isOddRow;
+        x = 0;
+        y += h;
+    }
+    return sq;
+    
+}
+
+function createPieces(w, h){
+    var piecesArray = [];
+    var pSide;
+    
+    //white pieces
+    pSide = 'white';
+    piecesArray.push(piece(pSide, pieceSrc.white.rook, 0, 0, w, h));
+    piecesArray.push(piece(pSide, pieceSrc.white.knight, 0, 0, w, h));
+    piecesArray.push(piece(pSide, pieceSrc.white.bishop, 0, 0, w, h));
+
+    piecesArray.push(piece(pSide, pieceSrc.white.queen, 0, 0, w, h));
+    piecesArray.push(piece(pSide, pieceSrc.white.king, 0, 0, w, h));
+
+    piecesArray.push(piece(pSide, pieceSrc.white.bishop, 0, 0, w, h));
+    piecesArray.push(piece(pSide, pieceSrc.white.knight, 0, 0, w, h));
+    piecesArray.push(piece(pSide, pieceSrc.white.rook, 0, 0, w, h));
+
+    for(var i=0 ; i<8 ; i++){
+        piecesArray.push(piece(pSide, pieceSrc.white.pawn, 0, 0, w, h));
+    }
+
+    //black pieces
+    pSide = 'black';
+
+    for(var i=0 ; i<8 ; i++){
+        piecesArray.push(piece(pSide, pieceSrc.black.pawn, 0, 0, w, h));
+    }
+
+    piecesArray.push(piece(pSide, pieceSrc.black.rook, 0, 0, w, h));
+    piecesArray.push(piece(pSide, pieceSrc.black.bishop, 0, 0, w, h));
+    piecesArray.push(piece(pSide, pieceSrc.black.knight, 0, 0, w, h));
+
+    piecesArray.push(piece(pSide, pieceSrc.black.king, 0, 0, w, h));
+    piecesArray.push(piece(pSide, pieceSrc.black.queen, 0, 0, w, h));   
+
+    piecesArray.push(piece(pSide, pieceSrc.black.bishop, 0, 0, w, h));
+    piecesArray.push(piece(pSide, pieceSrc.black.knight, 0, 0, w, h));
+    piecesArray.push(piece(pSide, pieceSrc.black.rook, 0, 0, w, h));
+    
+    return piecesArray;
+}
+
 var pieceSrc = 
     {
         'white': 
@@ -43,105 +123,30 @@ board.initBoard =
     function(canvas, context){
 
                 //board related variables
-                var isOddRow = true;
-                var isOddCol = true;
-                var x, y, squareWidth, squareHeight;
-                x = y = 0;
+                
+                //square width and height
+                var squareWidth, squareHeight;
                 squareWidth = canvas.width/8;
                 squareHeight = canvas.height/8;
-
-                var pSide, pSrc, pWidth = 20, pHeight = 50;
                 
-                /*var p = 
-                    [
-                        piece(pSide, pieceSrc.white.rook, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.white.knight, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.white.bishop, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.white.queen, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.white.king, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.white.bishop, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.white.knight, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.white.rook, 0, 0, pWidth, pHeight),
-                        
-                        piece(pSide, pieceSrc.black.rook, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.black.knight, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.black.bishop, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.black.queen, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.black.king, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.black.bishop, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.black.knight, 0, 0, pWidth, pHeight),
-                        piece(pSide, pieceSrc.black.rook, 0, 0, pWidth, pHeight)
-                    ];
-                board.pieces = p;*/
-                //white pieces
-                pSide = 'white';
-                board.pieces.push(piece(pSide, pieceSrc.white.rook, 0, 0, pWidth, pHeight));
-                board.pieces.push(piece(pSide, pieceSrc.white.knight, 0, 0, pWidth, pHeight));
-                board.pieces.push(piece(pSide, pieceSrc.white.bishop, 0, 0, pWidth, pHeight));
+                //piece width and height
+                var pieceWidth, pieceHeight;
+                pieceWidth = squareWidth/2.5;
+                pieceHeight = squareHeight;
                 
-                board.pieces.push(piece(pSide, pieceSrc.white.queen, 0, 0, pWidth, pHeight));
-                board.pieces.push(piece(pSide, pieceSrc.white.king, 0, 0, pWidth, pHeight));
+                //create pieces array
+                board.pieces = createPieces(pieceWidth, pieceHeight);    
                 
-                board.pieces.push(piece(pSide, pieceSrc.white.bishop, 0, 0, pWidth, pHeight));
-                board.pieces.push(piece(pSide, pieceSrc.white.knight, 0, 0, pWidth, pHeight));
-                board.pieces.push(piece(pSide, pieceSrc.white.rook, 0, 0, pWidth, pHeight));
-    
-                for(var i=0 ; i<8 ; i++){
-                    board.pieces.push(piece(pSide, pieceSrc.white.pawn, 0, 0, pWidth, pHeight));
-                }
-    
-                //black pieces
-                pSide = 'black';
-                board.pieces.push(piece(pSide, pieceSrc.black.rook, 0, 0, pWidth, pHeight));
-                board.pieces.push(piece(pSide, pieceSrc.black.bishop, 0, 0, pWidth, pHeight));
-                board.pieces.push(piece(pSide, pieceSrc.black.knight, 0, 0, pWidth, pHeight));
-                
-                board.pieces.push(piece(pSide, pieceSrc.black.king, 0, 0, pWidth, pHeight));
-                board.pieces.push(piece(pSide, pieceSrc.black.queen, 0, 0, pWidth, pHeight));   
-                
-                board.pieces.push(piece(pSide, pieceSrc.black.bishop, 0, 0, pWidth, pHeight));
-                board.pieces.push(piece(pSide, pieceSrc.black.knight, 0, 0, pWidth, pHeight));
-                board.pieces.push(piece(pSide, pieceSrc.black.rook, 0, 0, pWidth, pHeight));
-    
-                for(var i=0 ; i<8 ; i++){
-                    board.pieces.push(piece(pSide, pieceSrc.black.pawn, 0, 0, pWidth, pHeight));
-                }
-
                 //construct board array of squares
-                for(var i=0 ; i<8 ; i++){
-                    //create a row in the array of squares
-                    board.squars[i] = [];
-                    //populating the row in the array of squares
-                    for(var j=0 ; j<8 ; j++){
-                        if(j===0){
-                            if(isOddRow){
-                                isOddCol = true;
-                            }else{
-                                isOddCol = false;
-                            }
-                        }
-                        if(isOddCol){
-                            //white square
-                            board.squars[i][j] = square('white', '#119DA4', -1, x, y, squareWidth, squareHeight);
-                        }else{
-                            //black square
-                            board.squars[i][j] = square('black', '#0C7489', -1, x, y, squareWidth, squareHeight);
-                        }
-                        isOddCol = !isOddCol;
-                        x += squareWidth;
-                    }
-                    isOddRow = !isOddRow;
-                    x = 0;
-                    y += squareHeight;
-                }
-
-               // console.log(board.squars);
-                //console.log(board.pieces);
+                board.squars = createBoard(squareWidth, squareHeight);
+    
+                console.log(board.squars);
+                console.log(board.pieces);
     
                 //placing chess pieces on squares logically
                 for(var i=0 ; i<2 ; i++){
                     for(var j=0 ; j<8 ; j++){
-                        board.squars[i][j].pieceID = j+i*j;
+                        board.squars[i][j].pieceID = j+i*8;
                         board.squars[6+i*1][j].pieceID = j+16+i*8;
                     }
                 }
@@ -155,17 +160,14 @@ board.initBoard =
                         context.fillRect(s.x, s.y, s.width, s.height);
                         
                         if(s.pieceID !== -1){
-                            board.pieces[s.pieceID].x = s.x;
+                            board.pieces[s.pieceID].x = s.x+s.width/4;
                             board.pieces[s.pieceID].y = s.y;
                             
-                            console.log(s.x, s.y);
                             var p = board.pieces[s.pieceID];
-                            console.log(p.x, p.y);
                             p.image.onload = 
                                 function(){
-                                    console.log(this.x, this.y);
-                                    context.drawImage(this, p.x, p.y, p.width, p.height); 
-                                };
+                                    context.drawImage(this.image, this.x, this.y, p.width, p.height); 
+                                }.bind(p);
                         }
                     }
                 }
@@ -195,5 +197,6 @@ $(document).ready(function(){
    // var board = board();
     board.initBoard(c.canvas, c.context);
     
-
+    
+    //requestAnimationFrame();
 });
