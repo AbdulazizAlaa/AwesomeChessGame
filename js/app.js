@@ -174,18 +174,17 @@ function makeMove(){
 }
 
 function fillsquare(i, j, context, init){
-    var s = board.squars[i][j];                       
+    var s = board.squars[i][j]; 
+    
     context.fillStyle = s.color;
     context.fillRect(s.x, s.y, s.width, s.height);
 
     if(s.pieceID !== -1){
-        //console.log('p');
         board.pieces[s.pieceID].x = s.x+s.width/4;
         board.pieces[s.pieceID].y = s.y;
         
         var p = board.pieces[s.pieceID];
         if(p.image.cache == null && !init){
-            //console.log('cached');
             context.drawImage(p.image, p.x, p.y, p.width, p.height); 
         }else{
             p.image.onload = 
@@ -196,6 +195,10 @@ function fillsquare(i, j, context, init){
         
     }
 
+}
+
+function getClickedSquare(x, y, canvas){
+    return {'row': Math.ceil(y/(canvas.height/8)), 'col': Math.ceil(x/(canvas.width/8))};
 }
 
 function initCanvas(){
@@ -217,9 +220,27 @@ $(document).ready(function(){
     c.context.fillRect(board.squars[0][0].x, board.squars[0][0].y, board.squars[0][0].width, board.squars[0][0].height);
     var i = 0, j=0;
     
-    k.down('up', function(){
+    var initialSquare = {'i': -1,'j': -1};
+    var clickedSquare, previousSquare;
+    clickedSquare = previousSquare = initialSquare;
+    var ck = 0;
+    
+    k.down('enter', function(){
+        ck++;
+        previousSquare = clickedSquare;
+        clickedSquare = {'i': i, 'j': j};
         
-        //console.log('left:b:'+i);
+        if(previousSquare !== clickedSquare && previousSquare !== initialSquare && ck === 2 && board.squars[previousSquare.j][previousSquare.i].pieceID !== -1){
+            board.squars[clickedSquare.j][clickedSquare.i].pieceID = board.squars[previousSquare.j][previousSquare.i].pieceID;
+            board.squars[previousSquare.j][previousSquare.i].pieceID = -1;
+            fillsquare(previousSquare.j, previousSquare.i, c.context, false);
+            fillsquare(clickedSquare.j, clickedSquare.i, c.context, false);
+            clickedSquare = previousSquare = initialSquare;
+            ck = 0;
+        }
+    });
+    
+    k.down('up', function(){
         if(j > 0){
             j--;
             if(j<8)
@@ -228,12 +249,9 @@ $(document).ready(function(){
             c.context.fillStyle = 'rgba(0,0,0, .4)';
             c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
         }
-        //console.log('left:a:'+i);
     });
     
     k.down('down', function(){
-
-        //console.log('right:b:'+i);
         if(j < 7){
             j++;
             if(j>0)
@@ -242,12 +260,9 @@ $(document).ready(function(){
             c.context.fillStyle = 'rgba(0,0,0, .4)';
             c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
         }
-        //console.log('right:a:'+i);
     });
     
     k.down('right', function(){
-
-        console.log('right:b:'+i);
         if(i < 7){
             i++;
             if(i>0)
@@ -262,12 +277,9 @@ $(document).ready(function(){
             c.context.fillStyle = 'rgba(0,0,0, .4)';
             c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
         }
-        console.log('right:a:'+i, j);
     });
     
     k.down('left', function(){
-        
-        //console.log('left:b:'+i);
         if(i>0){
             i--;
             if(i<8)
@@ -282,8 +294,28 @@ $(document).ready(function(){
             c.context.fillStyle = 'rgba(0,0,0, .4)';
             c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
         }
-        //console.log('left:a:'+i);
     });
+    
+    /*var clickedSquare, previousSquare;
+    
+    $('#canvas').mousedown(function(e){
+        previousSquare = clickedSquare;
+        clickedSquare = getClickedSquare(e.offsetX, e.offsetY, c.canvas);
+        
+        
+        fillsquare(previousSquare.row, previousSquare.col, c.context, false);
+        c.context.fillStyle = 'rgba(0,0,0, .4)';
+        c.context.fillRect(clickedSquare.col, clickedSquare.row, board.squars[clickedSquare.row][clickedSquare.col].width, board.squars[clickedSquare.row][clickedSquare.col].height);
+        
+        if(previousSquare !== clickedSquare){
+            if(board.squars[previousSquare.row][previousSquare.col].pieceID != -1){
+                console.log(board.pieces[board.squars[previousSquare.row][previousSquare.col].pieceID].src);
+            }
+        }
+        console.log(e.offsetX, e.offsetY);
+        console.log(getClickedSquare(e.offsetX, e.offsetY, c.canvas));
+    
+    });*/
     
     
     //requestAnimationFrame();
