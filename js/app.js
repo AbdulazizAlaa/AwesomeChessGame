@@ -1,5 +1,41 @@
-var square = function(color, pieceID, x, y, width, height){
-    return {'color': color, 'pieceID': pieceID, 'x': x, 'y': y, 'width': width, 'height': height};
+function loadImage(src, onLoad){
+    
+    var image = new Image();
+    image.src = src;
+    image.onload = onLoad;
+    
+    return image;
+}
+
+var pieceSrc = 
+    {
+        'white': 
+            {
+                'king': 'images/pieces/king_white.png',
+                'queen': 'images/pieces/queen_white.png',
+                'bishop': 'images/pieces/bishop_white.png',
+                'knight': 'images/pieces/knight_white.png',
+                'rook': 'images/pieces/rook_white.png',
+                'pawn': 'images/pieces/pawn_white.png'
+            },
+        'black': 
+            {
+                'king': 'images/pieces/king_black.png',
+                'queen': 'images/pieces/queen_black.png',
+                'bishop': 'images/pieces/bishop_black.png',
+                'knight': 'images/pieces/knight_black.png',
+                'rook': 'images/pieces/rook_black.png',
+                'pawn': 'images/pieces/pawn_black.png'
+            }
+    };
+
+var piece = function(side, src, x, y, width, height, onLoad){
+    return {'side': side, 'src': src, 'image': loadImage(src, onLoad), 'x': x, 'y': y, 'width': width, 'height': height};
+};
+
+
+var square = function(side, color, pieceID, x, y, width, height){
+    return {'side': side, 'color': color, 'pieceID': pieceID, 'x': x, 'y': y, 'width': width, 'height': height};
 };
 
 var board = {'squars': []};
@@ -30,10 +66,10 @@ board.initBoard =
                         }
                         if(isOddCol){
                             //white square
-                            board.squars[i][j] = square('#119DA4', -1, x, y, width, height);
+                            board.squars[i][j] = square('white', '#119DA4', -1, x, y, width, height);
                         }else{
                             //black square
-                            board.squars[i][j] = square('#0C7489', -1, x, y, width, height);
+                            board.squars[i][j] = square('black', '#0C7489', -1, x, y, width, height);
                         }
                         isOddCol = !isOddCol;
                         x += width;
@@ -61,7 +97,7 @@ board.initBoard =
                 context.lineTo(0, 0);                    
                 context.stroke();
 
-    }
+    };
 
 function initCanvas(){
     var canvas = $('#canvas')[0];
