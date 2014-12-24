@@ -1,12 +1,11 @@
 function loadImage(src, onLoad){
     
     var image = new Image();
-    image.src = src;
     image.onload = onLoad;
+    image.src = src;
     
     return image;
 }
-
 
 function createBoard(w, h){
     var sq = [];
@@ -154,35 +153,50 @@ board.initBoard =
                 //make board squares
                 for(var i=0 ; i<8 ; i++){
                     for(var j=0 ; j<8 ; j++){
-                        
-                        var s = board.squars[i][j];                       
-                        context.fillStyle = s.color;
-                        context.fillRect(s.x, s.y, s.width, s.height);
-                        
-                        if(s.pieceID !== -1){
-                            board.pieces[s.pieceID].x = s.x+s.width/4;
-                            board.pieces[s.pieceID].y = s.y;
-                            
-                            var p = board.pieces[s.pieceID];
-                            p.image.onload = 
-                                function(){
-                                    context.drawImage(this.image, this.x, this.y, p.width, p.height); 
-                                }.bind(p);
-                        }
+                        fillsquare(i, j, context, true);
                     }
                 }
 
                 //make board border
-                context.beginPath();
+               /* context.beginPath();
                 context.strokeStyle = "black";
                 context.moveTo(0,0);
                 context.lineTo(canvas.width, 0);
                 context.lineTo(canvas.width, canvas.height);
                 context.lineTo(0, canvas.height);
                 context.lineTo(0, 0);                    
-                context.stroke();
+                context.stroke();*/
 
     };
+
+function makeMove(){
+
+}
+
+function fillsquare(i, j, context, init){
+    var s = board.squars[i][j];                       
+    context.fillStyle = s.color;
+    context.fillRect(s.x, s.y, s.width, s.height);
+
+    if(s.pieceID !== -1){
+        //console.log('p');
+        board.pieces[s.pieceID].x = s.x+s.width/4;
+        board.pieces[s.pieceID].y = s.y;
+        
+        var p = board.pieces[s.pieceID];
+        if(p.image.cache == null && !init){
+            //console.log('cached');
+            context.drawImage(p.image, p.x, p.y, p.width, p.height); 
+        }else{
+            p.image.onload = 
+                function(){
+                    context.drawImage(this.image, this.x, this.y, p.width, p.height); 
+                }.bind(p);
+        }
+        
+    }
+
+}
 
 function initCanvas(){
     var canvas = $('#canvas')[0];
@@ -194,8 +208,82 @@ function initCanvas(){
 $(document).ready(function(){
     //getting the canvas object and the context
     var c = initCanvas();
-   // var board = board();
+    
     board.initBoard(c.canvas, c.context);
+    
+    var k = new Kibo();
+    
+    c.context.fillStyle = 'rgba(0,0,0, .4)';
+    c.context.fillRect(board.squars[0][0].x, board.squars[0][0].y, board.squars[0][0].width, board.squars[0][0].height);
+    var i = 0, j=0;
+    
+    k.down('up', function(){
+        
+        //console.log('left:b:'+i);
+        if(j > 0){
+            j--;
+            if(j<8)
+                fillsquare(j+1, i, c.context, false);
+
+            c.context.fillStyle = 'rgba(0,0,0, .4)';
+            c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
+        }
+        //console.log('left:a:'+i);
+    });
+    
+    k.down('down', function(){
+
+        //console.log('right:b:'+i);
+        if(j < 7){
+            j++;
+            if(j>0)
+                fillsquare(j-1, i, c.context, false);
+
+            c.context.fillStyle = 'rgba(0,0,0, .4)';
+            c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
+        }
+        //console.log('right:a:'+i);
+    });
+    
+    k.down('right', function(){
+
+        console.log('right:b:'+i);
+        if(i < 7){
+            i++;
+            if(i>0)
+                fillsquare(j, i-1, c.context, false);
+
+            c.context.fillStyle = 'rgba(0,0,0, .4)';
+            c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
+        }else if(j < 7){
+            fillsquare(j, i, c.context, false);
+            j++;
+            i=0;
+            c.context.fillStyle = 'rgba(0,0,0, .4)';
+            c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
+        }
+        console.log('right:a:'+i, j);
+    });
+    
+    k.down('left', function(){
+        
+        //console.log('left:b:'+i);
+        if(i>0){
+            i--;
+            if(i<8)
+                fillsquare(j, i+1, c.context, false);
+
+            c.context.fillStyle = 'rgba(0,0,0, .4)';
+            c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
+        }else if(j > 0){
+            fillsquare(j, i, c.context, false);
+            j--;
+            i=7;
+            c.context.fillStyle = 'rgba(0,0,0, .4)';
+            c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
+        }
+        //console.log('left:a:'+i);
+    });
     
     
     //requestAnimationFrame();
