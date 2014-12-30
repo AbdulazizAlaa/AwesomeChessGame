@@ -41,8 +41,10 @@ $(document).ready(function(){
     k.down('up', function(){
         if(j > 0){
             j--;
-            if(j<8)
+            if(j<8){
+                board.squares[j+1][i].selected = 0;
                 board.squares[j+1][i].fillSquare(board, c.context, false);
+            }
             
             board.squares[j][i].selectSquare(c.context);
         }
@@ -51,8 +53,10 @@ $(document).ready(function(){
     k.down('down', function(){
         if(j < 7){
             j++;
-            if(j>0)
+            if(j>0){
+                board.squares[j-1][i].selected = 0;
                 board.squares[j-1][i].fillSquare(board, c.context, false);
+            }
                 
             board.squares[j][i].selectSquare(c.context);
         }
@@ -61,11 +65,14 @@ $(document).ready(function(){
     k.down('right', function(){
         if(i < 7){
             i++;
-            if(i>0)
+            if(i>0){
+                board.squares[ j][i-1].selected = 0;
                 board.squares[ j][i-1].fillSquare(board, c.context, false);
+            }
             
              board.squares[j][i].selectSquare(c.context);   
         }else if(j < 7){
+            board.squares[j][i].selected = 0;
             board.squares[j][i].fillSquare(board, c.context, false);
             
             j++;
@@ -78,11 +85,14 @@ $(document).ready(function(){
     k.down('left', function(){
         if(i>0){
             i--;
-            if(i<8)
+            if(i<8){
+                board.squares[j][i+1].selected = 0;
                 board.squares[j][i+1].fillSquare(board, c.context, false);
+            }
                 
             board.squares[j][i].selectSquare(c.context);
         }else if(j > 0){
+            board.squares[j][i].selected = 0;
             board.squares[j][i].fillSquare(board, c.context, false);
             
             j--;
@@ -91,15 +101,33 @@ $(document).ready(function(){
             board.squares[j][i].selectSquare(c.context);
         }
     });
-    
-    /*var clickedSquare, previousSquare;
-    
+        
     $('#canvas').mousedown(function(e){
+        ck++;
         previousSquare = clickedSquare;
-        clickedSquare = getClickedSquare(e.offsetX, e.offsetY, c.canvas);
+        clickedSquare = board.squares[0][0].getClickedSquare(e.offsetX, e.offsetY, c.canvas);
         
+        console.log(e.offsetX, e.offsetY);
+        console.log(board.squares[0][0].getClickedSquare(e.offsetX, e.offsetY, c.canvas));
+        //console.log(clickedSquare, previousSquare);
+        //console.log(board);
+        //console.log(board.squares);
+        //console.log(board.squares[previousSquare.j][previousSquare.i]);
         
-        fillsquare(previousSquare.row, previousSquare.col, c.context, false);
+        board.squares[clickedSquare.i][clickedSquare.j].selectSquare(c.context);
+        
+        if(previousSquare !== clickedSquare && previousSquare !== initialSquare && ck === 2 && board.squares[previousSquare.i][previousSquare.j].pieceID !== -1){
+            board.squares[clickedSquare.j][clickedSquare.i].pieceID = board.squares[previousSquare.j][previousSquare.i].pieceID;
+            board.squares[previousSquare.j][previousSquare.i].pieceID = -1;
+            
+            board.squares[clickedSquare.j][clickedSquare.i].fillSquare(board, c.context, false);
+            board.squares[previousSquare.j][previousSquare.i].fillSquare(board, c.context, false);
+            
+            clickedSquare = previousSquare = initialSquare;
+            ck = 0;
+        }
+        
+        /*fillsquare(previousSquare.row, previousSquare.col, c.context, false);
         c.context.fillStyle = 'rgba(0,0,0, .4)';
         c.context.fillRect(clickedSquare.col, clickedSquare.row, board.squares[clickedSquare.row][clickedSquare.col].width, board.squares[clickedSquare.row][clickedSquare.col].height);
         
@@ -109,9 +137,9 @@ $(document).ready(function(){
             }
         }
         console.log(e.offsetX, e.offsetY);
-        console.log(getClickedSquare(e.offsetX, e.offsetY, c.canvas));
+        console.log(getClickedSquare(e.offsetX, e.offsetY, c.canvas));*/
     
-    });*/
+    });
     
     
     //requestAnimationFrame();

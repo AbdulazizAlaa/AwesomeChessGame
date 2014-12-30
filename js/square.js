@@ -16,8 +16,6 @@ Square.prototype.fillSquare = function(board, context, init){
     context.fillRect(this.x, this.y, this.width, this.height);
     if(this.selected === 1){
         this.selectSquare(context);
-        //context.fillStyle = 'rgba(0,0,0, .4)';
-        //context.fillRect(this.x, this.y, this.width, this.height);
     }
     if(this.pieceID !== -1){
         board.pieces[this.pieceID].x = this.x+this.width/4;
@@ -40,10 +38,12 @@ Square.prototype.emptySquare = function(context){
 };
 
 Square.prototype.selectSquare = function(context){
+    
     context.fillStyle = 'rgba(0,0,0, .4)';
     context.fillRect(this.x, this.y, this.width, this.height);
+    this.selected = 1;
 };
 
 Square.prototype.getClickedSquare = function (x, y, canvas){
-    return {'row': Math.ceil(y/(canvas.height/8)), 'col': Math.ceil(x/(canvas.width/8))};
+    return {'i': Math.ceil(y/(canvas.height/8))-1, 'j': Math.ceil(x/(canvas.width/8))-1};
 };
