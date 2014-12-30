@@ -9,12 +9,11 @@ $(document).ready(function(){
     //getting the canvas object and the context
     var c = initCanvas();
     
+    var board = new Board(c.canvas.width/8, c.canvas.height/8);
     board.initBoard(c.canvas, c.context);
     
     var k = new Kibo();
     
-    c.context.fillStyle = 'rgba(0,0,0, .4)';
-    c.context.fillRect(board.squars[0][0].x, board.squars[0][0].y, board.squars[0][0].width, board.squars[0][0].height);
     var i = 0, j=0;
     
     var initialSquare = {'i': -1,'j': -1};
@@ -27,11 +26,13 @@ $(document).ready(function(){
         previousSquare = clickedSquare;
         clickedSquare = {'i': i, 'j': j};
         
-        if(previousSquare !== clickedSquare && previousSquare !== initialSquare && ck === 2 && board.squars[previousSquare.j][previousSquare.i].pieceID !== -1){
-            board.squars[clickedSquare.j][clickedSquare.i].pieceID = board.squars[previousSquare.j][previousSquare.i].pieceID;
-            board.squars[previousSquare.j][previousSquare.i].pieceID = -1;
-            square.fillsquare(previousSquare.j, previousSquare.i, c.context, false);
-            square.fillsquare(clickedSquare.j, clickedSquare.i, c.context, false);
+        if(previousSquare !== clickedSquare && previousSquare !== initialSquare && ck === 2 && board.squares[previousSquare.j][previousSquare.i].pieceID !== -1){
+            board.squares[clickedSquare.j][clickedSquare.i].pieceID = board.squares[previousSquare.j][previousSquare.i].pieceID;
+            board.squares[previousSquare.j][previousSquare.i].pieceID = -1;
+            
+            board.squares[clickedSquare.j][clickedSquare.i].fillSquare(board, c.context, false);
+            board.squares[previousSquare.j][previousSquare.i].fillSquare(board, c.context, false);
+            
             clickedSquare = previousSquare = initialSquare;
             ck = 0;
         }
@@ -41,10 +42,9 @@ $(document).ready(function(){
         if(j > 0){
             j--;
             if(j<8)
-                square.fillsquare(j+1, i, c.context, false);
-
-            c.context.fillStyle = 'rgba(0,0,0, .4)';
-            c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
+                board.squares[j+1][i].fillSquare(board, c.context, false);
+            
+            board.squares[j][i].selectSquare(c.context);
         }
     });
     
@@ -52,10 +52,9 @@ $(document).ready(function(){
         if(j < 7){
             j++;
             if(j>0)
-                square.fillsquare(j-1, i, c.context, false);
-
-            c.context.fillStyle = 'rgba(0,0,0, .4)';
-            c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
+                board.squares[j-1][i].fillSquare(board, c.context, false);
+                
+            board.squares[j][i].selectSquare(c.context);
         }
     });
     
@@ -63,16 +62,16 @@ $(document).ready(function(){
         if(i < 7){
             i++;
             if(i>0)
-                square.fillsquare(j, i-1, c.context, false);
-
-            c.context.fillStyle = 'rgba(0,0,0, .4)';
-            c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
+                board.squares[ j][i-1].fillSquare(board, c.context, false);
+            
+             board.squares[j][i].selectSquare(c.context);   
         }else if(j < 7){
-            square.fillsquare(j, i, c.context, false);
+            board.squares[j][i].fillSquare(board, c.context, false);
+            
             j++;
             i=0;
-            c.context.fillStyle = 'rgba(0,0,0, .4)';
-            c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
+            
+            board.squares[j][i].selectSquare(c.context);
         }
     });
     
@@ -80,16 +79,16 @@ $(document).ready(function(){
         if(i>0){
             i--;
             if(i<8)
-                square.fillsquare(j, i+1, c.context, false);
-
-            c.context.fillStyle = 'rgba(0,0,0, .4)';
-            c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
+                board.squares[j][i+1].fillSquare(board, c.context, false);
+                
+            board.squares[j][i].selectSquare(c.context);
         }else if(j > 0){
-            square.fillsquare(j, i, c.context, false);
+            board.squares[j][i].fillSquare(board, c.context, false);
+            
             j--;
             i=7;
-            c.context.fillStyle = 'rgba(0,0,0, .4)';
-            c.context.fillRect(board.squars[j][i].x, board.squars[j][i].y, board.squars[j][i].width, board.squars[j][i].height);
+            
+            board.squares[j][i].selectSquare(c.context);
         }
     });
     
@@ -102,11 +101,11 @@ $(document).ready(function(){
         
         fillsquare(previousSquare.row, previousSquare.col, c.context, false);
         c.context.fillStyle = 'rgba(0,0,0, .4)';
-        c.context.fillRect(clickedSquare.col, clickedSquare.row, board.squars[clickedSquare.row][clickedSquare.col].width, board.squars[clickedSquare.row][clickedSquare.col].height);
+        c.context.fillRect(clickedSquare.col, clickedSquare.row, board.squares[clickedSquare.row][clickedSquare.col].width, board.squares[clickedSquare.row][clickedSquare.col].height);
         
         if(previousSquare !== clickedSquare){
-            if(board.squars[previousSquare.row][previousSquare.col].pieceID != -1){
-                console.log(board.pieces[board.squars[previousSquare.row][previousSquare.col].pieceID].src);
+            if(board.squares[previousSquare.row][previousSquare.col].pieceID != -1){
+                console.log(board.pieces[board.squares[previousSquare.row][previousSquare.col].pieceID].src);
             }
         }
         console.log(e.offsetX, e.offsetY);

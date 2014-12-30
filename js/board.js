@@ -1,56 +1,73 @@
-var board = {'squars': [], 'pieces': []};
-
-board.createPieces = function(w, h){
-    var piecesArray = [];
-    var pSide;
+function Board(squareWidth, squareHeight){
+    this.squares = [];
+    this.pieces = [];
+    this.pieceWidth = squareWidth/2.5;
+    this.pieceHeight = squareHeight;
+    this.squareWidth = squareWidth;
+    this.squareHeight = squareHeight;
     
+}
+//var board = {'squares': [], 'pieces': []};
+
+Board.prototype.createPieces = function(){
+    //var piecesArray = [];
+    var pSide;
+    if(this.pieceWidth && this.pieceHeight){
+        var w = this.pieceWidth;
+        var h = this.pieceHeight;    
+    }
+    var p = new Piece(pSide, "", 0, 0, w, h);
     //white pieces
     pSide = 'white';
-    piecesArray.push(piece.create(pSide, piece.images.white.rook, 0, 0, w, h));
-    piecesArray.push(piece.create(pSide, piece.images.white.knight, 0, 0, w, h));
-    piecesArray.push(piece.create(pSide, piece.images.white.bishop, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.white.rook, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.white.knight, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.white.bishop, 0, 0, w, h));
 
-    piecesArray.push(piece.create(pSide, piece.images.white.queen, 0, 0, w, h));
-    piecesArray.push(piece.create(pSide, piece.images.white.king, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.white.queen, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.white.king, 0, 0, w, h));
 
-    piecesArray.push(piece.create(pSide, piece.images.white.bishop, 0, 0, w, h));
-    piecesArray.push(piece.create(pSide, piece.images.white.knight, 0, 0, w, h));
-    piecesArray.push(piece.create(pSide, piece.images.white.rook, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.white.bishop, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.white.knight, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.white.rook, 0, 0, w, h));
 
     for(var i=0 ; i<8 ; i++){
-        piecesArray.push(piece.create(pSide, piece.images.white.pawn, 0, 0, w, h));
+        this.pieces.push(new Piece(pSide, p.images.white.pawn, 0, 0, w, h));
     }
 
     //black pieces
     pSide = 'black';
 
     for(var i=0 ; i<8 ; i++){
-        piecesArray.push(piece.create(pSide, piece.images.black.pawn, 0, 0, w, h));
+        this.pieces.push(new Piece(pSide, p.images.black.pawn, 0, 0, w, h));
     }
 
-    piecesArray.push(piece.create(pSide, piece.images.black.rook, 0, 0, w, h));
-    piecesArray.push(piece.create(pSide, piece.images.black.bishop, 0, 0, w, h));
-    piecesArray.push(piece.create(pSide,piece.images.black.knight, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.black.rook, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.black.bishop, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.black.knight, 0, 0, w, h));
 
-    piecesArray.push(piece.create(pSide, piece.images.black.king, 0, 0, w, h));
-    piecesArray.push(piece.create(pSide, piece.images.black.queen, 0, 0, w, h));   
+    this.pieces.push(new Piece(pSide, p.images.black.king, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.black.queen, 0, 0, w, h));   
 
-    piecesArray.push(piece.create(pSide, piece.images.black.bishop, 0, 0, w, h));
-    piecesArray.push(piece.create(pSide, piece.images.black.knight, 0, 0, w, h));
-    piecesArray.push(piece.create(pSide, piece.images.black.rook, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.black.bishop, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.black.knight, 0, 0, w, h));
+    this.pieces.push(new Piece(pSide, p.images.black.rook, 0, 0, w, h));
     
-    return piecesArray;
 };
-board.createBoard = function(w, h){
-    var sq = [];
+Board.prototype.createBoard = function(w, h){
+    //var sq = [];
     var isOddRow = true;
     var isOddCol = true;
     var x, y;
     x = y = 0;
+    if(this.squareWidth && this.squareHeight){
+        w = this.squareWidth;
+        h = this.squareHeight;    
+    }
     //construct board array of squares
     for(var i=0 ; i<8 ; i++){
         //create a row in the array of squares
-        sq[i] = [];
+        //sq[i] = [];
+        this.squares[i] = [];
         //populating the row in the array of squares
         for(var j=0 ; j<8 ; j++){
             if(j===0){
@@ -62,10 +79,10 @@ board.createBoard = function(w, h){
             }
             if(isOddCol){
                 //white square
-                sq[i][j] = square.create('white', '#119DA4', -1, x, y, w, h);
+                this.squares[i].push(new Square(0, 'white', '#119DA4', -1, x, y, w, h));
             }else{
                 //black square
-                sq[i][j] = square.create('black', '#0C7489', -1, x, y, w, h);
+                this.squares[i].push(new Square(0, 'black', '#0C7489', -1, x, y, w, h));
             }
             isOddCol = !isOddCol;
             x += w;
@@ -74,45 +91,33 @@ board.createBoard = function(w, h){
         x = 0;
         y += h;
     }
-    return sq;
-    
+    this.squares[0][0].selected = 1;    
 };
 
-board.initBoard = 
-    function(canvas, context){
-                //board related variables
-                
-                //square width and height
-                var squareWidth, squareHeight;
-                squareWidth = canvas.width/8;
-                squareHeight = canvas.height/8;
-                
-                //piece width and height
-                var pieceWidth, pieceHeight;
-                pieceWidth = squareWidth/2.5;
-                pieceHeight = squareHeight;
+Board.prototype.initBoard = 
+    function(canvas, context){                
                 
                 //create pieces array
-                board.pieces = board.createPieces(pieceWidth, pieceHeight);    
-                
+                this.createPieces();
                 //construct board array of squares
-                board.squars = board.createBoard(squareWidth, squareHeight);
+                this.createBoard();
     
-                console.log(board.squars);
-                console.log(board.pieces);
+                console.log(this.squares);
+                console.log(this.pieces);
     
                 //placing chess pieces on squares logically
                 for(var i=0 ; i<2 ; i++){
                     for(var j=0 ; j<8 ; j++){
-                        board.squars[i][j].pieceID = j+i*8;
-                        board.squars[6+i*1][j].pieceID = j+16+i*8;
+                        this.squares[i][j].pieceID = j+i*8;
+                        this.squares[6+i*1][j].pieceID = j+16+i*8;
                     }
                 }
     
                 //make board squares
                 for(var i=0 ; i<8 ; i++){
                     for(var j=0 ; j<8 ; j++){
-                        square.fillsquare(i, j, context, true);
+                        this.squares[i][j].fillSquare(this, context, true);
+                        //square.fillsquare(this, i, j, context, true);
                     }
                 }
 
